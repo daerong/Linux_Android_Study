@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Image</string>
+    <string name="list_title">갤러리</string>
+    <string name="detail_title">명화</string>
+</resources>
