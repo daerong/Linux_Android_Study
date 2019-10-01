@@ -19,8 +19,8 @@ public class NewActivity extends AppCompatActivity {
         btnBack.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v){
                 finish();
+                overridePendingTransition(0, 0);
             }
         });
     }
-
 }
