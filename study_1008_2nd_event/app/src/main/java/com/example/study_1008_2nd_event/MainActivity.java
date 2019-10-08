@@ -11,8 +11,6 @@ import org.w3c.dom.Text;
 public class MainActivity extends AppCompatActivity {
 
     TextView tv_result;
-    Button btn_car;
-    Button btn_airplane;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,21 +18,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         tv_result = findViewById(R.id.tv_result);
-        btn_car = findViewById(R.id.btn_car);
-        btn_airplane = findViewById(R.id.btn_airplane);
 
-        btn_car.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                tv_result.setText("Car");
-            }
-        });
-
-        btn_airplane.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                tv_result.setText("Airplane");
-            }
-        });
+        findViewById(R.id.btn_car).setOnClickListener(mClickListener);
+        findViewById(R.id.btn_airplane).setOnClickListener(mClickListener);
     }
+
+    Button.OnClickListener mClickListener = new View.OnClickListener(){
+
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()){
+                case R.id.btn_car :
+                    tv_result.setText("Car");
+                    break;
+                case R.id.btn_airplane :
+                    tv_result.setText("Airplane");
+                    break;
+            }
+        }
+    };
 }
