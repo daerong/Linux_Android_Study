@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:orientation="vertical">
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <TableRow>
+            <Button
+                android:id="@+id/tb_7"
+                android:text="7"/>
+            <Button
+                android:id="@+id/tb_8"
+                android:text="8"/>
+            <Button
+                android:id="@+id/tb_9"
+                android:text="9"/>
+            <Button
+                android:id="@+id/tb_divide"
+                android:text="×"/>
+        </TableRow>
+
+        <TableRow>
+            <Button
+                android:id="@+id/tb_4"
+                android:text="4"/>
+            <Button
+                android:id="@+id/tb_5"
+                android:text="5"/>
+            <Button
+                android:id="@+id/tb_6"
+                android:text="6"/>
+            <Button
+                android:id="@+id/tb_multiple"
+                android:text="÷"/>
+        </TableRow>
+
+        <TableRow>
+            <Button
+                android:id="@+id/tb_1"
+                android:text="1"/>
+            <Button
+                android:id="@+id/tb_2"
+                android:text="2"/>
+            <Button
+                android:id="@+id/tb_3"
+                android:text="3"/>
+            <Button
+                android:id="@+id/tb_minus"
+                android:text="－"/>
+        </TableRow>
+
+        <TableRow>
+            <Button
+                android:id="@+id/tb_0"
+                android:layout_span="2"
+                android:text="0"/>
+            <Button
+                android:id="@+id/tb_dot"
+                android:text="."/>
+            <Button
+                android:id="@+id/tb_plus"
+                android:text="＋"/>
+        </TableRow>
+
+    </TableLayout>
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:columnCount="4"
+        android:rowCount="4">
+
+        <Button
+            android:id="@+id/gd_0"
+            android:text="0"
+            android:layout_rowSpan="2"
+            android:layout_gravity="fill_vertical"/>
+        <Button
+            android:id="@+id/gd_1"
+            android:text="1"/>
+        <Button
+            android:id="@+id/gd_2"
+            android:text="2"/>
+        <Button
+            android:id="@+id/gd_3"
+            android:text="3"/>
+        <Button
+            android:id="@+id/gd_4"
+            android:text="4"/>
+        <Button
+            android:id="@+id/gd_5"
+            android:text="5"/>
+        <Button
+            android:id="@+id/gd_6"
+            android:text="6"/>
+        <Button
+            android:id="@+id/gd_dot"
+            android:text="."/>
+        <Button
+            android:id="@+id/gd_7"
+            android:text="7"/>
+        <Button
+            android:id="@+id/gd_8"
+            android:text="8"/>
+        <Button
+            android:id="@+id/gd_9"
+            android:text="9"/>
+        <Button
+            android:id="@+id/gd_plus"
+            android:text="＋"/>
+        <Button
+            android:id="@+id/gd_minus"
+            android:text="－"/>
+        <Button
+            android:id="@+id/gd_multiple"
+            android:text="×"/>
+        <Button
+            android:id="@+id/gd_divide"
+            android:text="÷"/>
+
+    </GridLayout>
+
+
+
+</LinearLayout>
