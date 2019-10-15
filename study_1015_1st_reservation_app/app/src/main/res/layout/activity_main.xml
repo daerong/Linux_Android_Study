@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:orientation="vertical">
+
+    <Chronometer
+        android:id="@+id/chronometer_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:format="예약에 걸린 시간 : %s"
+        android:gravity="center_horizontal"
+        android:textSize="25sp"/>
+
+    <Button
+        android:id="@+id/startBtn"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="예약 시작"
+        android:textSize="25sp"/>
+
+    <RadioGroup
+        android:id="@+id/rdoSelect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RadioButton
+            android:id="@+id/rdoCal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="날짜 설정(캘린더뷰)"
+            android:checked="true"/>
+        <RadioButton
+            android:id="@+id/rdoTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="시간 설정"/>
+    </RadioGroup>
+
+    <DatePicker
+        android:id="@+id/dPicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:datePickerMode="spinner"
+        android:visibility="gone"/>
+
+    <TimePicker
+        android:id="@+id/tPicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:timePickerMode="spinner"/>
+
+    <Button
+        android:id="@+id/endBtn"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:text="예약 완료"
+        android:textSize="25sp"/>
+
+</LinearLayout>
