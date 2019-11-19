@@ -15,7 +15,7 @@ int fpga_text_lcd(const char *str1, const char *str2){
     size_t str_size;
     int chk_size;
 
-    unsigned char string[32];
+    char string[32];
     memset(string, 0, sizeof(string));
 
     dev = open(TEXT_LCD_DEVICE, O_RDWR);
@@ -26,19 +26,19 @@ int fpga_text_lcd(const char *str1, const char *str2){
         str_size = strlen(str1);
         __android_log_print(ANDROID_LOG_INFO, "LogGo", "Driver = %d", str_size);
         if(str_size > 0){
-            strncat(reinterpret_cast<char *>(string), str1, str_size);
+            strncat(string, str1, str_size);
             memset(string + str_size, ' ', LINE_BUFF - str_size);
         }
         str_size = strlen(str2);
         __android_log_print(ANDROID_LOG_INFO, "LogGo", "Driver = %d", str_size);
         if(str_size > 0){
-            strncat(reinterpret_cast<char *>(string), str2, str_size);
+            strncat(string, str2, str_size);
             memset(string + LINE_BUFF + str_size, ' ', LINE_BUFF - str_size);
             __android_log_print(ANDROID_LOG_INFO, "LogGo", "String = %s", string);
         }
         __android_log_print(ANDROID_LOG_INFO, "LogGo", "String = %s", string);
 
-        write(dev, string, MAX_BUFF - 1);
+        write(dev, string, MAX_BUFF);
         close(dev);
     }
 
