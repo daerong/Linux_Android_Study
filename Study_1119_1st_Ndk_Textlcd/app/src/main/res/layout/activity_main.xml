@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:orientation="vertical">
+
+   <TextView
+       android:id="@+id/prt_string_top"
+       android:layout_width="fill_parent"
+       android:layout_height="wrap_content"
+       android:text="Line 1 : 16자리 영숫자 입력."/>
+
+    <EditText
+        android:id="@+id/edit_text_top"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/prt_string_bot"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Line 2 : 16자리 영숫자 입력."/>
+
+    <EditText
+        android:id="@+id/edit_text_bot"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+        android:id="@+id/BT01"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Go!"/>
+
+        <Button
+            android:id="@+id/BT02"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Clear"/>
+
+    </LinearLayout>
+
+</LinearLayout>
