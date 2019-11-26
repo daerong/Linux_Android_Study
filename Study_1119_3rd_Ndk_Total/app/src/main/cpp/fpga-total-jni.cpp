@@ -156,7 +156,7 @@ public:
 
         memset(fnd_num, '0', sizeof(fnd_num));
 
-        int vol = strlen(num_arr);
+        size_t vol = strlen(num_arr);
         if(vol > FND_MAX_DIGIT) vol = FND_MAX_DIGIT;
 
         for(int i = 0; i < vol; i++){
@@ -164,7 +164,8 @@ public:
                 __android_log_print(ANDROID_LOG_INFO, "FND Write Warring", "Parameter out of Range, Arr[%d] = %c", i, num_arr[i]);
                 fnd_num[i] = '0';
             }else{
-                fnd_num[i] = (unsigned char) num_arr[i];
+                __android_log_print(ANDROID_LOG_INFO, "FND Write Warring", "Arr[%d] = %c", i, num_arr[i]);
+                fnd_num[i] = static_cast<unsigned char>(num_arr[i] - '0');
             }
         }
         fnd_ret = write(fnd_dev, fnd_num, FND_MAX_DIGIT);
@@ -734,25 +735,25 @@ Java_com_example_study_11119_13rd_1ndk_1total_MainActivity_ReadPushSwitch(JNIEnv
 }
 
 extern "C"
-JNIEXPORT jstring JNICALL
+JNIEXPORT jint JNICALL
 Java_com_example_study_11119_13rd_1ndk_1total_MainActivity_ReadDipSwitch(JNIEnv *env,
                                                                          jobject instance){
     int ret = 0;
     unsigned char stat;
-    char result[10];
+    int result;
     DipSwitch dipSwitch;
 
     ret = dipSwitch.dipSwitchOpen();
-    if(ret < 0) return nullptr;
+    if(ret < 0) return -1;
 
     ret = dipSwitch.dipSwitchRead(&stat);
-    if(ret < 0) return nullptr;
+    if(ret < 0) return -1;
 
     ret = dipSwitch.dipSwitchClose();
-    if(ret < 0) return nullptr;
+    if(ret < 0) return -1;
 
-    sprintf(result, "%02x", stat);
-    return env->NewStringUTF(result);
+    result = stat;
+    return result;
 }
 
 extern "C"

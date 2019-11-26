@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
             @Override
             public void onClick(View view) {
                 String result = ReadFnd();
-                ledOutput.setText(result);
+                fndOutput.setText(result);
             }
         });
         fndWrite = findViewById(R.id.fnd_write);
@@ -144,19 +144,27 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         dotWrite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String getString = fndInput.getText().toString();
-                int num = Integer.parseInt(getString);
-                if(num > DOT_MAX || num < DOT_MIN){
+                String getString = dotInput.getText().toString();
+                if(getString == ""){
                     Toast.makeText(getApplicationContext(), "0~9", Toast.LENGTH_LONG).show();
                     dotInput.setFocusableInTouchMode(true);
                     dotInput.requestFocus();
 //                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 //                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
                 }else{
-                    if(WriteDot(num) < 0){
-                        Toast.makeText(getApplicationContext(), "Dot Matrix write error", Toast.LENGTH_LONG).show();
+                    int num = Integer.parseInt(getString);
+                    if(num > DOT_MAX || num < DOT_MIN){
+                        Toast.makeText(getApplicationContext(), "0~9", Toast.LENGTH_LONG).show();
+                        dotInput.setFocusableInTouchMode(true);
+                        dotInput.requestFocus();
+//                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
                     }else{
-                        dotInput.setText(null);
+                        if(WriteDot(num) < 0){
+                            Toast.makeText(getApplicationContext(), "Dot Matrix write error", Toast.LENGTH_LONG).show();
+                        }else{
+                            dotInput.setText(null);
+                        }
                     }
                 }
             }
@@ -235,8 +243,13 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
         dipSwitchRead.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String result = ReadDipSwitch();
-                dipSwitchOutput.setText(result);
+                int result = ReadDipSwitch();
+                if(result < 0){
+                    Toast.makeText(getApplicationContext(), "Buzzer read error", Toast.LENGTH_LONG).show();
+                }else{
+                    String binaryType = Integer.toBinaryString(result);
+                    dipSwitchOutput.setText(reverseString(binaryType));
+                }
             }
         });
 
@@ -250,51 +263,71 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
                 String getAction = stepMotorAction.getText().toString();
                 String getDirction = stepMotorDirection.getText().toString();
                 String getSpeed = stepMotorSpeed.getText().toString();
-
-                int action = Integer.parseInt(getAction);
-                int direction = Integer.parseInt(getDirction);
-                int speed = Integer.parseInt(getSpeed);
-
-                if(action != STEP_MOTOR_ON || action != STEP_MOTOR_OFF){
-                    Toast.makeText(getApplicationContext(), "ON = 0, OFF = 1", Toast.LENGTH_LONG).show();
+                if(getAction.equals("")){
+                    Toast.makeText(getApplicationContext(), "OFF = 0, ON = 1", Toast.LENGTH_LONG).show();
                     stepMotorAction.setFocusableInTouchMode(true);
                     stepMotorAction.requestFocus();
 //                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 //                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-                }else if(direction != STEP_MOTOR_DIR_LEFT || direction != STEP_MOTOR_DIR_RIGHT) {
-                    Toast.makeText(getApplicationContext(), "LEFT = 0, RIGHT = 1", Toast.LENGTH_LONG).show();
+                }else if(getDirction.equals("")){
+                    Toast.makeText(getApplicationContext(), "RIGHT = 0, LEFT = 1", Toast.LENGTH_LONG).show();
                     stepMotorDirection.setFocusableInTouchMode(true);
                     stepMotorDirection.requestFocus();
 //                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 //                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
-                }else if(speed < STEP_MOTOR_SPDVAL_MIN || speed > STEP_MOTOR_SPDVAL_MAX) {
+                }else if(getSpeed.equals("")){
                     Toast.makeText(getApplicationContext(), "SPEED : 0~255", Toast.LENGTH_LONG).show();
                     stepMotorSpeed.setFocusableInTouchMode(true);
                     stepMotorSpeed.requestFocus();
 //                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 //                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
                 }else{
-                    if(WriteStepMotor(action, direction, speed) < 0){
-                        Toast.makeText(getApplicationContext(), "Step Motor write error", Toast.LENGTH_LONG).show();
+                    int action = Integer.parseInt(getAction);
+                    int direction = Integer.parseInt(getDirction);
+                    int speed = Integer.parseInt(getSpeed);
+
+                    if(action != STEP_MOTOR_ON && action != STEP_MOTOR_OFF){
+                        Toast.makeText(getApplicationContext(), "OFF = 0, ON = 1", Toast.LENGTH_LONG).show();
+                        stepMotorAction.setFocusableInTouchMode(true);
+                        stepMotorAction.requestFocus();
+//                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                    }else if(direction != STEP_MOTOR_DIR_LEFT && direction != STEP_MOTOR_DIR_RIGHT) {
+                        Toast.makeText(getApplicationContext(), "RIGHT = 0, LEFT = 1", Toast.LENGTH_LONG).show();
+                        stepMotorDirection.setFocusableInTouchMode(true);
+                        stepMotorDirection.requestFocus();
+//                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                    }else if(speed < STEP_MOTOR_SPDVAL_MIN || speed > STEP_MOTOR_SPDVAL_MAX) {
+                        Toast.makeText(getApplicationContext(), "SPEED : 0~255", Toast.LENGTH_LONG).show();
+                        stepMotorSpeed.setFocusableInTouchMode(true);
+                        stepMotorSpeed.requestFocus();
+//                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
                     }else{
-                        stepMotorAction.setText(null);
-                        stepMotorDirection.setText(null);
-                        stepMotorSpeed.setText(null);
+                        if(WriteStepMotor(action, direction, speed) < 0){
+                            Toast.makeText(getApplicationContext(), "Step Motor write error", Toast.LENGTH_LONG).show();
+                        }else{
+
+                        }
                     }
                 }
             }
         });
+    }
 
+    public static String reverseString(String s){
+        return (new StringBuffer(s)).reverse().toString();
     }
 
     @Override
     public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
         switch (checkedId) {
             case R.id.buzzer_on:
-                WriteBuzzer(0);
+                WriteBuzzer(1);
                 break;
             case R.id.buzzer_off:
-                WriteBuzzer(1);
+                WriteBuzzer(0);
                 break;
         }
     }
@@ -315,6 +348,6 @@ public class MainActivity extends AppCompatActivity implements RadioGroup.OnChec
     public native int ReadBuzzer();
     public native int WriteBuzzer(int stat);
     public native String ReadPushSwitch();
-    public native String ReadDipSwitch();
+    public native int ReadDipSwitch();
     public native int WriteStepMotor(int action, int direction, int speed);
 }
