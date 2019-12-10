@@ -109,8 +109,9 @@ void* pushSwitch_ev_func(void *data){
     while(pushSwitch_isAlive){
         stat = fpga_push_switch();
         __android_log_print(ANDROID_LOG_INFO, "NATIVE", "data = %d", stat);
-        //responseFunction(stat);
-        usleep(200000);
+        responseFunction(stat);
+
+        usleep(1000000);
     }
 }
 
