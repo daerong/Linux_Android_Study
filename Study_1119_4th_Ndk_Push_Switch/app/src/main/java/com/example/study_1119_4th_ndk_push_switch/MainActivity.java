@@ -3,6 +3,7 @@ package com.example.study_1119_4th_ndk_push_switch;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 
 import java.util.Timer;
@@ -22,40 +23,29 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mPushSwitchValue = findViewById(R.id.my_ptr_value);
-        mPushSwitchState = findViewById(R.id.my_ptr_state);
-        TimerTask timerTask = new TimerTask() {
-            Handler handler = new Handler();
+        mPushSwitchState = findViewById(R.id.my_ptr_state);;
+        mPushSwitchValue = findViewById(R.id.my_ptr_value);;
 
-            @Override
-            public void run() {
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        int value;
-                        value = DeviceOpen();
+        startPushSwitchThread();
+    }
 
-                        if(value != -1) {
-                            value = ReceivePushSwitchValue();
-                            DeviceClose();
-                            String bin = Integer.toBinaryString(value);
-                            mPushSwitchValue.setText(bin);
-                        }
-                    }
-                }, 100);
-            }
-        };
+    @Override
+    protected void onStop() {
+        super.onStop();
 
-        Timer t = new Timer();
-        t.schedule(timerTask, 300, 300);
+        int ret = -1;
+        ret = endPushSwitchThread();
+    }
+
+    public static void ReadPushSwitch(int stat) {
+        Log.d("result", "stat = " + stat);
     }
 
     /**
      * A native method that is implemented by the 'native-lib' native library,
      * which is packaged with this application.
      */
-    public native int DeviceOpen();
-    public native int DeviceClose();
-    public native int ReceivePushSwitchValue();
+    public native int startPushSwitchThread();
+    public native int endPushSwitchThread();
 
 }

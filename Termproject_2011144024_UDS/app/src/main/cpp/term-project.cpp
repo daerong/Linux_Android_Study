@@ -815,7 +815,7 @@ void pushButtonResponse(int pushSwitchStatus) {
     }
 
     jniInterfacePointer->CallStaticVoidMethod(globalReferenceMainActivity, classFunctionID, pushSwitchStatus);
-    globalJavaVM->DetachCurrentThread() ;
+    globalJavaVM->DetachCurrentThread();
 }
 
 
