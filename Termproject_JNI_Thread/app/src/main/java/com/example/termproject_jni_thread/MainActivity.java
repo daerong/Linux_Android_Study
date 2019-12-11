@@ -2,6 +2,7 @@ package com.example.termproject_jni_thread;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -30,8 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
         gamePlayer = findViewById(R.id.game_player);
 
-
-
+        pushSwitchThreadStart();
     }
 
     View.OnClickListener clickListener = new View.OnClickListener() {
@@ -50,5 +50,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    public static void ReadPushSwitch(int stat) {
+        Log.d("result", "stat = " + stat);
+    }
+
+    public native void pushSwitchThreadStart();
+    public native void pushSwitchThreadEnd();
 
 }
