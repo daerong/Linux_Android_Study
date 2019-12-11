@@ -62,4 +62,11 @@ public class MainActivity extends AppCompatActivity {
     public native void dotThreadStart();        // 5초동안 돌다가 빠져나옴
     public native int dotThreadCheck();         // dotThread가 동작중인지 확인
 
+    public native int ReadLed();                                                
+    public native int WriteLed(int num);                                        // 범인 거리를 세팅
+    public native int WriteTextLcd(String str1, String str2);                   // 범인이나 선임이 하는 말 넣으면 재미있을 듯
+    public native int WriteBuzzer(int stat);                                    // 검거 시 울림
+    public native int ReadDipSwitch();                                          // 옵션 확인
+    public native int WriteStepMotor(int action, int direction, int speed);     // 도망 방향, 얼마나 근접했는 지.
+
 }
