@@ -55,9 +55,11 @@ public class MainActivity extends AppCompatActivity {
         Log.d("result", "stat = " + stat);
     }
 
-    public native void pushSwitchThreadStart();
-    public native void pushSwitchThreadEnd();
-    public native void fndThreadStart();
-    public native void fndThreadEnd();
+    public native void pushSwitchThreadStart(); // pushSwitch ON
+    public native void pushSwitchThreadEnd();   // pushSwitch OFF
+    public native void fndThreadStart();        // 시간 계수, 타이머 시작
+    public native void fndThreadEnd();          // 시간 중지, 타이머 종료
+    public native void dotThreadStart();        // 5초동안 돌다가 빠져나옴
+    public native int dotThreadCheck();         // dotThread가 동작중인지 확인
 
 }

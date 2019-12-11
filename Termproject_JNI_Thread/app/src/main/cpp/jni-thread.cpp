@@ -12,8 +12,11 @@ jmethodID classFunctionID;
 
 int fnd_msg = 1;
 int pushSwitch_msg = 2;
+int dot_msg = 3;
+
 int fnd_event_stat = 0;
 int pushSwitch_event_stat = 0;
+int dot_event_stat = 0;
 
 JNIEXPORT jint JNICALL
 JNI_OnLoad(JavaVM *parameterVM, void *reserved){
@@ -91,12 +94,12 @@ void* pushSwitch_ev_func(void *data){
                 stat |= 0x1 << i;
             }
         }
-        globalJavaVM->AttachCurrentThread(&jniInterfacePointer, nullptr);
+        jniInterfacePointer->CallStaticVoidMethod(globalReferenceMainActivity, classFunctionID, stat);
 
         usleep(1000000);
     }
 
-    jniInterfacePointer->CallStaticVoidMethod(globalReferenceMainActivity, classFunctionID, stat);
+
     globalJavaVM->DetachCurrentThread();
     __android_log_print(ANDROID_LOG_INFO, "NATIVE", "env or jObject is null");
 
@@ -134,7 +137,6 @@ JNIEXPORT void JNICALL
 Java_com_example_termproject_1jni_1thread_MainActivity_pushSwitchThreadEnd(JNIEnv *env, jobject obj){
     pushSwitch_event_stat = 0;
 }
-
 
 void* fnd_ev_func(void *data){
     int ret = 0;
@@ -183,6 +185,58 @@ JNIEXPORT void JNICALL
 Java_com_example_termproject_1jni_1thread_MainActivity_fndThreadEnd(JNIEnv *env, jobject obj){
     fnd_event_stat = 0;
 }
+
+void* dot_ev_func(void *data){
+    int ret = 0;
+    int time = 5;
+    Dot dot;
+
+    ret = dot.dotOpen();
+    if(ret < 0) return nullptr;
+
+    while(time < 0){
+        dot.dotWrite(time);
+        sleep(1);
+        time--;
+    }
+
+    dot.dotClose();
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_termproject_1jni_1thread_MainActivity_dotThreadStart(JNIEnv *env, jobject obj){
+    pthread_t dot_ev_thread;
+    pthread_attr_t dot_attr;
+    void *dot_status;
+    int dot_thread_id;
+
+    pthread_attr_init(&dot_attr);
+    pthread_attr_setdetachstate(&dot_attr, PTHREAD_CREATE_JOINABLE);
+
+    dot_event_stat = 1;
+
+    dot_thread_id = pthread_create(&dot_ev_thread, &dot_attr, dot_ev_func, (void *) &dot_msg);
+    pthread_attr_destroy(&dot_attr);
+    if(dot_thread_id){
+        __android_log_print( ANDROID_LOG_INFO, "NATIVE", "Error creating thread: " + dot_thread_id);
+    }else{
+        dot_thread_id = pthread_join(dot_ev_thread, &dot_status);
+        if(dot_thread_id){
+            __android_log_print( ANDROID_LOG_INFO, "NATIVE", "Error returning from join");
+        }
+    }
+
+    dot_event_stat = 0;
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_example_termproject_1jni_1thread_MainActivity_dotThreadCheck(JNIEnv *env, jobject obj){
+    if(dot_event_stat) return -1;
+    else return 1;
+}
+
 
 
 
