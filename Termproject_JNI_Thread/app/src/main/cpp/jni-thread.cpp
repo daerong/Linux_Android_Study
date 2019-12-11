@@ -106,21 +106,21 @@ extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_termproject_1jni_1thread_MainActivity_pushSwitchThreadStart(JNIEnv *env, jobject obj){
     pthread_t pushSwitch_ev_thread;
-    pthread_attr_t attr;
-    void *status;
+    pthread_attr_t pushSwitch_attr;
+    void *pushSwitch_status;
     int pushSwitch_thread_id;
 
-    pthread_attr_init(&attr);
-    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+    pthread_attr_init(&pushSwitch_attr);
+    pthread_attr_setdetachstate(&pushSwitch_attr, PTHREAD_CREATE_JOINABLE);
 
     pushSwitch_event_stat = 1;
 
-    pushSwitch_thread_id = pthread_create(&pushSwitch_ev_thread, &attr, pushSwitch_ev_func, (void *) &thread_msg);
-    pthread_attr_destroy(&attr);
+    pushSwitch_thread_id = pthread_create(&pushSwitch_ev_thread, &pushSwitch_attr, pushSwitch_ev_func, (void *) &thread_msg);
+    pthread_attr_destroy(&pushSwitch_attr);
     if(pushSwitch_thread_id){
         __android_log_print( ANDROID_LOG_INFO, "NATIVE", "Error creating thread: " + pushSwitch_thread_id);
     }else{
-        pushSwitch_thread_id = pthread_join(pushSwitch_ev_thread, &status);
+        pushSwitch_thread_id = pthread_join(pushSwitch_ev_thread, &pushSwitch_status);
         if(pushSwitch_thread_id){
             __android_log_print( ANDROID_LOG_INFO, "NATIVE", "Error returning from join");
         }
