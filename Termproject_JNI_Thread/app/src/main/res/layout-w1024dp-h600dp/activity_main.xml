@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <RelativeLayout
+        android:id="@+id/game_board"
+        android:layout_width="600dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/board5">
+
+        <ImageView
+            android:id="@+id/game_player"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/player1"
+            android:background="#77ffffff"/>
+
+
+    </RelativeLayout>
+
+</LinearLayout>
