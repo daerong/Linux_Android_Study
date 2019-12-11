@@ -133,7 +133,7 @@ Java_com_example_study_11119_14th_1ndk_1push_1switch_MainActivity_startPushSwitc
         __android_log_print( ANDROID_LOG_INFO, "NATIVE", "Successful find the class.") ;
     }
 
-    globalReferenceMainActivity = (jclass)env->NewGlobalRef(mainActivityClassId) ;
+    globalReferenceMainActivity = (jclass)env->NewGlobalRef(mainActivityClassId);
     classFunctionID = env->GetStaticMethodID(mainActivityClassId, "ReadPushSwitch", "(I)V") ;
 
     if ( classFunctionID == nullptr) {
