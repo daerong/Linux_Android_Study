@@ -57,5 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
     public native void pushSwitchThreadStart();
     public native void pushSwitchThreadEnd();
+    public native void fndThreadStart();
+    public native void fndThreadEnd();
 
 }
