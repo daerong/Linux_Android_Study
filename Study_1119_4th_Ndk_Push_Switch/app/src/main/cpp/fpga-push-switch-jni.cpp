@@ -99,7 +99,7 @@ void responseFunction(int stat){
         return;
     }
 
-    jniInterfacePointer->CallStaticVoidMethod(globalReferenceMainActivity, classFunctionID, stat);
+    jniInterfacePointer->CallVoidMethod(globalReferenceMainActivity, classFunctionID, stat);
     globalJavaVM->DetachCurrentThread();
 }
 
@@ -134,7 +134,7 @@ Java_com_example_study_11119_14th_1ndk_1push_1switch_MainActivity_startPushSwitc
     }
 
     globalReferenceMainActivity = (jclass)env->NewGlobalRef(mainActivityClassId);
-    classFunctionID = env->GetStaticMethodID(mainActivityClassId, "ReadPushSwitch", "(I)V") ;
+    classFunctionID = env->GetMethodID(mainActivityClassId, "ReadPushSwitch", "(I)V") ;
 
     if ( classFunctionID == nullptr) {
         __android_log_print( ANDROID_LOG_INFO, "NATIVE", "Can't find the function." ) ;
