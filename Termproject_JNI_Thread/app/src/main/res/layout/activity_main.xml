@@ -6,7 +6,7 @@
     android:orientation="horizontal">
 
     <RelativeLayout
-        android:id="@+id/game_board"
+        android:id="@+id/game_background"
         android:layout_width="600dp"
         android:layout_height="match_parent"
         android:background="@drawable/board5">
@@ -17,6 +17,13 @@
             android:layout_height="60dp"
             android:background="#77ffffff"
             android:src="@drawable/player1" />
+
+        <ImageView
+            android:id="@+id/game_target"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="#77ffffff"
+            android:src="@drawable/player2" />
 
 
     </RelativeLayout>

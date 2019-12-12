@@ -4,18 +4,50 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int LED_MIN = 0;
+    private static final int LED_MAX = 255;
+    private static final int FND_MAX_DIGIT = 4;
+    private static final int DOT_MIN = 0;
+    private static final int DOT_MAX = 9;
+    private static final int TEXT_LCD_MAX_BUF = 32;
+    private static final int TEXT_LCD_LINE_BUF = 16;
+    private static final int BUZZER_ON = 1;
+    private static final int BUZZER_OFF = 0;
+    private static final int PUSH_SWITCH_MAX_BUTTON = 9;
+    private static final int STEP_MOTOR_STATE_VOL = 3;
+    private static final int STEP_MOTOR_ON = 0;
+    private static final int STEP_MOTOR_OFF = 1;
+    private static final int STEP_MOTOR_DIR_LEFT = 0;
+    private static final int STEP_MOTOR_DIR_RIGHT = 1;
+    private static final int STEP_MOTOR_SPDVAL_MIN = 0;
+    private static final int STEP_MOTOR_SPDVAL_MAX = 255;
 
-    RelativeLayout gameBoard;
+    private static final int PLAYER = 1;
+    private static final int TARGET = 2;
+    private static final int WORK = 1;
+    private static final int END = 0;
+    private static final int HINT_ON = 1;
+    private static final int HINT_OFF = 0;
+
+    RelativeLayout gameBackground;
     ImageView gamePlayer;
+    ImageView gameTarget;
+    ImageButton startBtn;
+    ImageButton hintBtn;
 
-    public static int locateX = 0;
-    public static int locateY = 0;
-    public static float blockWidth = 0;
+    static GameBoard gameClass = new GameBoard();
+    static int playerX;
+    static int playerY;
+    static int targetX;
+    static int targetY;
+    static int tryCount;
+    static int gameStat;
+    static int hintStat;
 
     static {
         System.loadLibrary("jni-thread");
@@ -26,33 +58,90 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        gameBoard = findViewById(R.id.game_board);
-        gameBoard.setOnClickListener(clickListener);
-
+        gameBackground = findViewById(R.id.game_background);
         gamePlayer = findViewById(R.id.game_player);
+        gameTarget = findViewById(R.id.game_target);
+        startBtn = findViewById(R.id.start_btn);
+        startBtn.setOnClickListener(clickListener);
+        hintBtn = findViewById(R.id.hint_btn);
+        hintBtn.setOnClickListener(clickListener);
+
+        playerX = gameClass.getLocateX(PLAYER);
+        playerY = gameClass.getLocateY(PLAYER);
+
+        targetX = gameClass.getLocateX(TARGET);
+        targetY = gameClass.getLocateY(TARGET);
+
+        tryCount = 0;
+        WriteTextLCD();
+
+        gameStat = END;
+        hintStat = HINT_OFF;
+        DrowBoard();
 
         pushSwitchThreadStart();
     }
 
-    View.OnClickListener clickListener = new View.OnClickListener() {
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        pushSwitchThreadEnd();
+    }
+
+    View.OnClickListener clickListener = new View.OnClickListener(){
+
         @Override
-        public void onClick(View v) {
-            switch (v.getId()){
-                case R.id.game_board :
-//                    locateX++;
-//                    gamePlayer.setX(gamePlayer.getWidth()*locateX);
-
-                    locateY++;
-                    gamePlayer.setY(gamePlayer.getHeight()*locateY);
-
+        public void onClick(View view) {
+            switch (view.getId()){
+                case R.id.start_btn:
+                    if(gameStat == END){
+                        gameStat = WORK;
+                        startBtn.setImageResource(R.drawable.give_up_btn);
+                    }else{
+                        gameStat = END;
+                        startBtn.setImageResource(R.drawable.start_btn);
+                    }
                     break;
-                default:
+                case R.id.hint_btn:
+                    if(hintStat == HINT_OFF){
+                        hintStat = HINT_ON;
+                        hintBtn.setImageResource(R.drawable.hint_off_btn);
+                    }else{
+                        hintStat = HINT_OFF;
+                        hintBtn.setImageResource(R.drawable.start_btn);
+                    }
+                    break;
             }
         }
     };
 
-    public static void ReadPushSwitch(int stat) {
+    public void ReadPushSwitch(int stat) {
         Log.d("result", "stat = " + stat);
+
+        if(gameClass.MovePlayer(stat) > 0){
+            tryCount++;
+            WriteTextLCD();
+        }else if(gameClass.MovePlayer(stat) == 0){
+            gameStat = END;
+        }
+
+        playerX = gameClass.getLocateX(PLAYER);
+        playerY = gameClass.getLocateY(PLAYER);
+
+        dotThreadStart();
+    }
+
+    public void DrowBoard(){
+        gamePlayer.setX(gamePlayer.getWidth()*playerX);
+        gamePlayer.setY(gamePlayer.getHeight()*playerY);
+
+        gameTarget.setX(gameTarget.getWidth()*targetX);
+        gameTarget.setY(gameTarget.getHeight()*targetY);
+    }
+
+    public void WriteTextLCD(){
+        WriteTextLcd("STEP : " + tryCount, "");
     }
 
     public native void pushSwitchThreadStart(); // pushSwitch ON

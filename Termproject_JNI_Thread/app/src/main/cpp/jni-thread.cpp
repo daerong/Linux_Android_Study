@@ -50,7 +50,7 @@ JNI_OnLoad(JavaVM *parameterVM, void *reserved){
     }
 
     /* Compute and cache the method ID */
-    classFunctionID = env->GetStaticMethodID(cls, "ReadPushSwitch", "(I)V") ;
+    classFunctionID = env->GetMethodID(cls, "ReadPushSwitch", "(I)V") ;
     if ( classFunctionID == nullptr) {
         __android_log_print( ANDROID_LOG_INFO, "NATIVE", "Can't get a static method");
         return JNI_ERR;
@@ -94,7 +94,8 @@ void* pushSwitch_ev_func(void *data){
                 stat |= 0x1 << i;
             }
         }
-        jniInterfacePointer->CallStaticVoidMethod(globalReferenceMainActivity, classFunctionID, stat);
+
+        if(!dot_event_stat && stat) jniInterfacePointer->CallStaticVoidMethod(globalReferenceMainActivity, classFunctionID, stat);
 
         usleep(1000000);
     }
@@ -188,7 +189,7 @@ Java_com_example_termproject_1jni_1thread_MainActivity_fndThreadEnd(JNIEnv *env,
 
 void* dot_ev_func(void *data){
     int ret = 0;
-    int time = 5;
+    int time = 3;
     Dot dot;
 
     ret = dot.dotOpen();

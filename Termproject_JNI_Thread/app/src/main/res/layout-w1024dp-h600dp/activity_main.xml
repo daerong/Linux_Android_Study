@@ -6,7 +6,7 @@
     android:orientation="horizontal">
 
     <RelativeLayout
-        android:id="@+id/game_board"
+        android:id="@+id/game_background"
         android:layout_width="600dp"
         android:layout_height="match_parent"
         android:background="@drawable/board5">
@@ -15,10 +15,43 @@
             android:id="@+id/game_player"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:src="@drawable/player1"
-            android:background="#77ffffff"/>
+            android:background="#77ffffff"
+            android:src="@drawable/player1" />
 
+        <ImageView
+            android:id="@+id/game_target"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="#77ffffff"
+            android:src="@drawable/player2" />
 
     </RelativeLayout>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="20dp"
+        android:orientation="vertical">
+
+        <ImageButton
+            android:id="@+id/start_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true"
+            android:src="@drawable/start_btn"
+            android:background="@android:color/transparent"
+            android:layout_marginBottom="20dp"/>
+
+        <ImageButton
+            android:id="@+id/hint_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="centerInside"
+            android:adjustViewBounds="true"
+            android:src="@drawable/hint_btn"
+            android:background="@android:color/transparent"/>
+
+    </LinearLayout>
 
 </LinearLayout>
