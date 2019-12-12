@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         hintStat = HINT_OFF;
         DrowBoard();
 
-        pushSwitchThreadStart();
+//        pushSwitchThreadStart();
     }
 
     @Override
@@ -109,16 +109,18 @@ public class MainActivity extends AppCompatActivity {
                     if(hintStat == HINT_OFF){
                         hintStat = HINT_ON;
                         hintBtn.setImageResource(R.drawable.hint_off_btn);
+                        dotThreadStart();
                     }else{
                         hintStat = HINT_OFF;
                         hintBtn.setImageResource(R.drawable.hint_on_btn);
+                        WriteStepMotor(STEP_MOTOR_ON, STEP_MOTOR_DIR_RIGHT, 100);
                     }
                     break;
             }
         }
     };
 
-    public void ReadPushSwitch(int stat) {
+    private void ReadPushSwitch(int stat) {
         Log.d("result", "stat = " + stat);
 
 //        if(dotThreadCheck() == -1) {

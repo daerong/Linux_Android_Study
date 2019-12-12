@@ -86,8 +86,8 @@ void* pushSwitch_ev_func(void *data){
     while(pushSwitch_event_stat){
         result = pushSwitch.pushSwitchRead();
         __android_log_print(ANDROID_LOG_INFO, "NATIVE", "data = %d", result);
-
-        if(!dot_event_stat && result) jniInterfacePointer->CallVoidMethod(globalReferenceMainActivity, classFunctionID, result);
+//
+//        if(!dot_event_stat && result) jniInterfacePointer->CallVoidMethod(globalReferenceMainActivity, classFunctionID, result);
 
         usleep(100000);
     }
@@ -105,21 +105,13 @@ Java_com_example_termproject_1jni_1thread_MainActivity_pushSwitchThreadStart(JNI
     void *pushSwitch_status;
     int pushSwitch_thread_id;
 
-    __android_log_print( ANDROID_LOG_INFO, "NATIVE", "CHECK 1");
-
     pthread_attr_init(&pushSwitch_attr);
     pthread_attr_setdetachstate(&pushSwitch_attr, PTHREAD_CREATE_JOINABLE);
 
-    __android_log_print( ANDROID_LOG_INFO, "NATIVE", "CHECK 2");
-
     pushSwitch_event_stat = 1;
-
-    __android_log_print( ANDROID_LOG_INFO, "NATIVE", "CHECK 3");
 
     pushSwitch_thread_id = pthread_create(&pushSwitch_ev_thread, &pushSwitch_attr, pushSwitch_ev_func, (void *) &pushSwitch_msg);
     pthread_attr_destroy(&pushSwitch_attr);
-
-    __android_log_print( ANDROID_LOG_INFO, "NATIVE", "CHECK 4");
 
     if(pushSwitch_thread_id){
         __android_log_print( ANDROID_LOG_INFO, "NATIVE", "Error creating thread: %d", pushSwitch_thread_id);
@@ -129,8 +121,6 @@ Java_com_example_termproject_1jni_1thread_MainActivity_pushSwitchThreadStart(JNI
             __android_log_print( ANDROID_LOG_INFO, "NATIVE", "Error returning from join");
         }
     }
-
-    __android_log_print( ANDROID_LOG_INFO, "NATIVE", "CHECK 5");
 
     return 0;
 }
