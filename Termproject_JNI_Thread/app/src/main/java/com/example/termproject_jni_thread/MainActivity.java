@@ -1,7 +1,7 @@
 package com.example.termproject_jni_thread;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -98,9 +98,11 @@ public class MainActivity extends AppCompatActivity {
                     if(gameStat == END){
                         gameStat = WORK;
                         startBtn.setImageResource(R.drawable.give_up_btn);
+                        fndThreadStart();
                     }else{
                         gameStat = END;
                         startBtn.setImageResource(R.drawable.start_btn);
+                        fndThreadEnd();
                     }
                     break;
                 case R.id.hint_btn:
@@ -109,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
                         hintBtn.setImageResource(R.drawable.hint_off_btn);
                     }else{
                         hintStat = HINT_OFF;
-                        hintBtn.setImageResource(R.drawable.start_btn);
+                        hintBtn.setImageResource(R.drawable.hint_on_btn);
                     }
                     break;
             }
@@ -119,17 +121,31 @@ public class MainActivity extends AppCompatActivity {
     public void ReadPushSwitch(int stat) {
         Log.d("result", "stat = " + stat);
 
-        if(gameClass.MovePlayer(stat) > 0){
-            tryCount++;
-            WriteTextLCD();
-        }else if(gameClass.MovePlayer(stat) == 0){
-            gameStat = END;
-        }
+//        if(dotThreadCheck() == -1) {
+//            WriteTextLcd("STEP : " + tryCount, "Thread is working");
+//            return;
+//        }
+//
+//        // PLAYER 이동
+//        if(gameClass.MovePlayer(stat) > 0){
+//            tryCount++;
+//            WriteTextLCD();
+//        }else if(gameClass.MovePlayer(stat) == 0){
+//            gameStat = END;
+//            startBtn.setImageResource(R.drawable.start_btn);
+//            fndThreadEnd();
+//        }
+//
+//        playerX = gameClass.getLocateX(PLAYER);
+//        playerY = gameClass.getLocateY(PLAYER);
+//
+//        dotThreadStart();
+//
+//        // TARGET 이동
+//        if(gameClass.RunAway(2) > 0){       // 도망갔을 때,
+//            WriteStepMotor(STEP_MOTOR_ON, STEP_MOTOR_DIR_RIGHT, 100);
+//        }
 
-        playerX = gameClass.getLocateX(PLAYER);
-        playerY = gameClass.getLocateY(PLAYER);
-
-        dotThreadStart();
     }
 
     public void DrowBoard(){
@@ -144,11 +160,11 @@ public class MainActivity extends AppCompatActivity {
         WriteTextLcd("STEP : " + tryCount, "");
     }
 
-    public native void pushSwitchThreadStart(); // pushSwitch ON
-    public native void pushSwitchThreadEnd();   // pushSwitch OFF
-    public native void fndThreadStart();        // 시간 계수, 타이머 시작
-    public native void fndThreadEnd();          // 시간 중지, 타이머 종료
-    public native void dotThreadStart();        // 5초동안 돌다가 빠져나옴
+    public native int pushSwitchThreadStart(); // pushSwitch ON
+    public native int pushSwitchThreadEnd();   // pushSwitch OFF
+    public native int fndThreadStart();        // 시간 계수, 타이머 시작
+    public native int fndThreadEnd();          // 시간 중지, 타이머 종료
+    public native int dotThreadStart();        // 5초동안 돌다가 빠져나옴
     public native int dotThreadCheck();         // dotThread가 동작중인지 확인
 
     public native int ReadLed();

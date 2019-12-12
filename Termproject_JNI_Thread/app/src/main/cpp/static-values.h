@@ -398,6 +398,69 @@ public:
     }
 };
 
+class PushSwitch{
+private:
+    int push_switch_dev;
+    unsigned char push_sw_buff[PUSH_SWITCH_MAX_BUTTON];
+    size_t buff_size;
+    ssize_t push_switch_ret;
+    unsigned char is_running;
+public:
+    PushSwitch(){
+        push_switch_dev = 0;
+        buff_size = sizeof(push_sw_buff);
+        push_switch_ret = 0;
+        is_running = 0;
+    }
+
+    int pushSwitchOpen(){
+        if(is_running) {
+            __android_log_print(ANDROID_LOG_INFO, "Push Switch Open Error", "Device is running, Driver = %d", push_switch_dev);
+            return -1;
+        }
+
+        push_switch_dev = open(PUSH_SWITCH_DEVICE, O_RDWR);
+        if(push_switch_dev < 0){
+            __android_log_print(ANDROID_LOG_INFO, "Push Switch Open Error", "Failed open, Driver = %d", push_switch_dev);
+            return -1;
+        }else {
+            __android_log_print(ANDROID_LOG_INFO, "Push Switch Open Success", "Successful open, Driver = %d", push_switch_dev);
+            is_running = 1;
+            return 0;
+        }
+    }
+    int pushSwitchClose(){
+        if(!is_running) {
+            __android_log_print(ANDROID_LOG_INFO, "Push Switch Close Error", "Device is not running");
+            return -1;
+        }
+
+        __android_log_print(ANDROID_LOG_INFO, "Push Switch Close Success", "Successful close, Driver = %d", push_switch_dev);
+        close(push_switch_dev);
+        is_running = 0;
+        return 0;
+    }
+    int pushSwitchRead(){
+        int result = 0;
+        int i = 0;
+
+        if(!is_running) {
+            __android_log_print(ANDROID_LOG_INFO, "Push Switch Read Error", "Device is not running");
+            return -1;
+        }
+
+        read(push_switch_dev, &push_sw_buff, buff_size);
+
+        for(i = 0; i < PUSH_SWITCH_MAX_BUTTON; i++){
+            if(push_sw_buff[i] != 0){
+                result |= 0x1 << i;
+            }
+        }
+
+        return result;
+    }
+};
+
 class DipSwitch{
 private:
     int dip_switch_dev;

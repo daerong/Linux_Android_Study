@@ -57,7 +57,7 @@ JNI_OnLoad(JavaVM *parameterVM, void *reserved){
     } else {
         __android_log_print( ANDROID_LOG_INFO, "NATIVE", "Successful get a static method");
     }
-    return JNI_VERSION_1_2;
+    return JNI_VERSION_1_4;
 }
 
 JNIEXPORT void JNICALL
@@ -72,71 +72,75 @@ JNI_OnUnload(JavaVM *parameterVM, void *reserved){
 }
 
 void* pushSwitch_ev_func(void *data){
-    int stat = 0;
-    unsigned char push_sw_buff[PUSH_SWITCH_MAX_BUTTON];
-    size_t buff_size = sizeof(push_sw_buff);
+    int ret = 0;
+    int result = 0;
+    PushSwitch pushSwitch;
 
-    int pushSwitch_dev = open(PUSH_SWITCH_DEVICE, O_RDWR);
-    if(pushSwitch_dev<0){
-        __android_log_print(ANDROID_LOG_INFO, "NATIVE", "pushSwitch Open Error");
-        return nullptr;
-    }
+    ret = pushSwitch.pushSwitchOpen();
+
+    if(ret < 0) return nullptr;
 
     JNIEnv* jniInterfacePointer = nullptr;
     globalJavaVM->AttachCurrentThread(&jniInterfacePointer, nullptr);
 
     while(pushSwitch_event_stat){
-        stat = read(pushSwitch_dev, &push_sw_buff, buff_size);
-        __android_log_print(ANDROID_LOG_INFO, "NATIVE", "data = %d", stat);
+        result = pushSwitch.pushSwitchRead();
+        __android_log_print(ANDROID_LOG_INFO, "NATIVE", "data = %d", result);
 
-        for(int i = 0; i < PUSH_SWITCH_MAX_BUTTON; i++){
-            if(push_sw_buff[i] != 0){
-                stat |= 0x1 << i;
-            }
-        }
+        if(!dot_event_stat && result) jniInterfacePointer->CallVoidMethod(globalReferenceMainActivity, classFunctionID, result);
 
-        if(!dot_event_stat && stat) jniInterfacePointer->CallStaticVoidMethod(globalReferenceMainActivity, classFunctionID, stat);
-
-        usleep(1000000);
+        usleep(100000);
     }
 
-
     globalJavaVM->DetachCurrentThread();
-    __android_log_print(ANDROID_LOG_INFO, "NATIVE", "env or jObject is null");
 
-    close(pushSwitch_dev);
-    __android_log_print(ANDROID_LOG_INFO, "NATIVE", "pushSwitch Close");
+    pushSwitch.pushSwitchClose();
 }
 
 extern "C"
-JNIEXPORT void JNICALL
+JNIEXPORT jint JNICALL
 Java_com_example_termproject_1jni_1thread_MainActivity_pushSwitchThreadStart(JNIEnv *env, jobject obj){
     pthread_t pushSwitch_ev_thread;
     pthread_attr_t pushSwitch_attr;
     void *pushSwitch_status;
     int pushSwitch_thread_id;
 
+    __android_log_print( ANDROID_LOG_INFO, "NATIVE", "CHECK 1");
+
     pthread_attr_init(&pushSwitch_attr);
     pthread_attr_setdetachstate(&pushSwitch_attr, PTHREAD_CREATE_JOINABLE);
 
+    __android_log_print( ANDROID_LOG_INFO, "NATIVE", "CHECK 2");
+
     pushSwitch_event_stat = 1;
+
+    __android_log_print( ANDROID_LOG_INFO, "NATIVE", "CHECK 3");
 
     pushSwitch_thread_id = pthread_create(&pushSwitch_ev_thread, &pushSwitch_attr, pushSwitch_ev_func, (void *) &pushSwitch_msg);
     pthread_attr_destroy(&pushSwitch_attr);
+
+    __android_log_print( ANDROID_LOG_INFO, "NATIVE", "CHECK 4");
+
     if(pushSwitch_thread_id){
-        __android_log_print( ANDROID_LOG_INFO, "NATIVE", "Error creating thread: " + pushSwitch_thread_id);
+        __android_log_print( ANDROID_LOG_INFO, "NATIVE", "Error creating thread: %d", pushSwitch_thread_id);
     }else{
         pushSwitch_thread_id = pthread_join(pushSwitch_ev_thread, &pushSwitch_status);
         if(pushSwitch_thread_id){
             __android_log_print( ANDROID_LOG_INFO, "NATIVE", "Error returning from join");
         }
     }
+
+    __android_log_print( ANDROID_LOG_INFO, "NATIVE", "CHECK 5");
+
+    return 0;
 }
 
 extern "C"
-JNIEXPORT void JNICALL
+JNIEXPORT jint JNICALL
 Java_com_example_termproject_1jni_1thread_MainActivity_pushSwitchThreadEnd(JNIEnv *env, jobject obj){
     pushSwitch_event_stat = 0;
+
+    return 0;
 }
 
 void* fnd_ev_func(void *data){
@@ -157,7 +161,7 @@ void* fnd_ev_func(void *data){
 }
 
 extern "C"
-JNIEXPORT void JNICALL
+JNIEXPORT jint JNICALL
 Java_com_example_termproject_1jni_1thread_MainActivity_fndThreadStart(JNIEnv *env, jobject obj){
     pthread_t fnd_ev_thread;
     pthread_attr_t fnd_attr;
@@ -172,19 +176,22 @@ Java_com_example_termproject_1jni_1thread_MainActivity_fndThreadStart(JNIEnv *en
     fnd_thread_id = pthread_create(&fnd_ev_thread, &fnd_attr, fnd_ev_func, (void *) &fnd_msg);
     pthread_attr_destroy(&fnd_attr);
     if(fnd_thread_id){
-        __android_log_print( ANDROID_LOG_INFO, "NATIVE", "Error creating thread: " + fnd_thread_id);
+        __android_log_print( ANDROID_LOG_INFO, "NATIVE", "Error creating thread: %d", fnd_thread_id);
     }else{
         fnd_thread_id = pthread_join(fnd_ev_thread, &fnd_status);
         if(fnd_thread_id){
             __android_log_print( ANDROID_LOG_INFO, "NATIVE", "Error returning from join");
         }
     }
+
+    return 0;
 }
 
 extern "C"
-JNIEXPORT void JNICALL
+JNIEXPORT jint JNICALL
 Java_com_example_termproject_1jni_1thread_MainActivity_fndThreadEnd(JNIEnv *env, jobject obj){
     fnd_event_stat = 0;
+    return 0;
 }
 
 void* dot_ev_func(void *data){
@@ -205,7 +212,7 @@ void* dot_ev_func(void *data){
 }
 
 extern "C"
-JNIEXPORT void JNICALL
+JNIEXPORT jint JNICALL
 Java_com_example_termproject_1jni_1thread_MainActivity_dotThreadStart(JNIEnv *env, jobject obj){
     pthread_t dot_ev_thread;
     pthread_attr_t dot_attr;
@@ -220,7 +227,7 @@ Java_com_example_termproject_1jni_1thread_MainActivity_dotThreadStart(JNIEnv *en
     dot_thread_id = pthread_create(&dot_ev_thread, &dot_attr, dot_ev_func, (void *) &dot_msg);
     pthread_attr_destroy(&dot_attr);
     if(dot_thread_id){
-        __android_log_print( ANDROID_LOG_INFO, "NATIVE", "Error creating thread: " + dot_thread_id);
+        __android_log_print( ANDROID_LOG_INFO, "NATIVE", "Error creating thread: %d", dot_thread_id);
     }else{
         dot_thread_id = pthread_join(dot_ev_thread, &dot_status);
         if(dot_thread_id){
@@ -229,6 +236,7 @@ Java_com_example_termproject_1jni_1thread_MainActivity_dotThreadStart(JNIEnv *en
     }
 
     dot_event_stat = 0;
+    return 0;
 }
 
 extern "C"
@@ -354,6 +362,12 @@ Java_com_example_termproject_1jni_1thread_MainActivity_WriteStepMotor(JNIEnv *en
 
     ret = stepMotor.stepMotorWrite(action, direction, speed);
     if(ret < 0) return ret;
+
+
+    // Motor 끄기
+    sleep(2);
+    ret = stepMotor.stepMotorWrite(STEP_MOTOR_OFF, direction, speed);
+    // Motor 끄기
 
     ret = stepMotor.stepMotorClose();
     return ret;
