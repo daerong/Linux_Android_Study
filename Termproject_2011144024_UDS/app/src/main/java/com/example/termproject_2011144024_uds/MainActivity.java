@@ -1,184 +1,256 @@
 package com.example.termproject_2011144024_uds;
 
-import android.graphics.Color;
 import android.os.CountDownTimer;
-import android.os.Handler;
-import android.os.Message;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
-import java.text.BreakIterator;
-import java.util.Random;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int LED_MIN = 0;
+    private static final int LED_MAX = 255;
+    private static final int FND_MAX_DIGIT = 4;
+    private static final int DOT_MIN = 0;
+    private static final int DOT_MAX = 9;
+    private static final int TEXT_LCD_MAX_BUF = 32;
+    private static final int TEXT_LCD_LINE_BUF = 16;
+    private static final int BUZZER_ON = 1;
+    private static final int BUZZER_OFF = 0;
+    private static final int PUSH_SWITCH_MAX_BUTTON = 9;
+    private static final int STEP_MOTOR_STATE_VOL = 3;
+    private static final int STEP_MOTOR_ON = 0;
+    private static final int STEP_MOTOR_OFF = 1;
+    private static final int STEP_MOTOR_DIR_LEFT = 0;
+    private static final int STEP_MOTOR_DIR_RIGHT = 1;
+    private static final int STEP_MOTOR_SPDVAL_MIN = 0;
+    private static final int STEP_MOTOR_SPDVAL_MAX = 255;
 
-    void ReadPushSwitch(int stat) {
-        mPushSwitchValue.setText("" + stat);
-//        switch(stat){
-//            case 1:
-//                break;
-//            case 2:
-//                break;
-//            case 4:
-//                break;
-//            case 8:
-//                break;
-//            case 16:
-//                break;
-//            case 32:
-//                break;
-//            case 64:
-//                break;
-//            case 128:
-//                break;
-//            case 256:
-//                break;
-//            default:
-//        }
+    private static final int PLAYER = 1;
+    private static final int TARGET = 2;
+    private static final int WORK = 1;
+    private static final int END = 0;
+    private static final int HINT_ON = 1;
+    private static final int HINT_OFF = 0;
+
+    Timer fndTimer;
+    TimerTask fndTimerTask;
+    Timer pushSwitchTimer;
+    TimerTask pushSwitchTimerTask;
+    CountDownTimer dotCountDownTimer;
+    CountDownTimer buzzerCountDownTimer;
+    CountDownTimer stepMotorCountDownTimer;
+
+    RelativeLayout gameBackground;
+    ImageView gamePlayer;
+    ImageView gameTarget;
+    ImageButton startBtn;
+    ImageButton hintBtn;
+
+    GameBoard gameClass = new GameBoard();
+    int playerX;
+    int playerY;
+    int targetX;
+    int targetY;
+    int tryCount;
+    int gameStat;
+    int hintStat;
+    int fndTimerCnt;
+    boolean dotIsRunning;
+    boolean buzzerIsRunning;
+    int buzzerStat;
+    boolean stepMotorIsRunning;
+
+    static {
+        System.loadLibrary("jni-thread");
     }
-
-    Button[][] btnArr = new Button[10][10];
-    TextView cntBox;
-    int mStepCnt = 0;
-    int mPastLocateI;
-    int mPastLocateJ;
-    int mNowLocateI;
-    int mNowLocateJ;
-    int mTargetI;
-    int mTargetJ;
-
-    boolean isFrist = true;
-
-    Timer timer;
-    TimerTask timerTask;
-    int timerCnt = 0;
-
-    TextView mPushSwitchValue;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        cntBox = findViewById(R.id.test_box);
-        mPushSwitchValue = findViewById(R.id.my_ptr_value);
+        gameBackground = findViewById(R.id.game_background);
+        gamePlayer = findViewById(R.id.game_player);
+        gameTarget = findViewById(R.id.game_target);
+        startBtn = findViewById(R.id.start_btn);
+        startBtn.setOnClickListener(clickListener);
+        hintBtn = findViewById(R.id.hint_btn);
+        hintBtn.setOnClickListener(clickListener);
 
-        int ret = -1;
-        ret = startPushSwitchThread();
+        playerX = gameClass.getLocateX(PLAYER);
+        playerY = gameClass.getLocateY(PLAYER);
 
-        Button.OnClickListener onClickListener = new Button.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                for(int i = 0; i < 10; i++){
-                    for(int j = 0; j < 10; j++){
-                        if(btnArr[i][j] == view){
-                            mNowLocateI = i;
-                            mNowLocateJ = j;
-                        }
-                    }
-                }
+        targetX = gameClass.getLocateX(TARGET);
+        targetY = gameClass.getLocateY(TARGET);
 
-                if(isFrist) {
-                    view.setBackgroundColor(Color.rgb(0, 0, 255));
-                    isFrist = false;
+        dotIsRunning = false;
+        buzzerIsRunning = false;
+        buzzerStat = BUZZER_OFF;
+        stepMotorIsRunning = false;
 
-                    mPastLocateI = mNowLocateI;
-                    mPastLocateJ = mNowLocateJ;
+        tryCount = 0;
+        WriteTextLcd(" ", " ");
 
-                    boolean isMatched = false;
-                    do{
-                        Random rnd = new Random();
-                        mTargetI = rnd.nextInt(9);
-                        mTargetJ = rnd.nextInt(9);
-                        if(mNowLocateI == mTargetI && mNowLocateJ == mTargetJ) isMatched = true;
-                    }while(isMatched);
-
-                    btnArr[mTargetI][mTargetJ].setBackgroundColor(Color.rgb(255, 0, 0));
-
-                    timerStart();
-
-                }else{
-                    if(canMove(mNowLocateI, mNowLocateJ, mPastLocateI, mPastLocateJ)){
-                        if((mPastLocateI+mPastLocateJ)%2 == 1) btnArr[mPastLocateI][mPastLocateJ].setBackgroundColor(Color.rgb(85, 85, 85));
-                        else btnArr[mPastLocateI][mPastLocateJ].setBackgroundColor(Color.rgb(0, 0, 0));
-
-                        btnArr[mNowLocateI][mNowLocateJ].setBackgroundColor(Color.rgb(0, 0, 255));
-
-                        mStepCnt++;
-                        cntBox.setText("" + mStepCnt);
-
-                        mPastLocateI = mNowLocateI;
-                        mPastLocateJ = mNowLocateJ;
-                    }
-
-                }
-
-//                if(WriteFnd(mStepCnt) < 0){
-//                    Toast.makeText(getApplicationContext(), "FND write error", Toast.LENGTH_LONG).show();
-//                }
-            }
-        };
-
-        btnArr[0][0] = findViewById(R.id.btn_00);        btnArr[0][1] = findViewById(R.id.btn_01);        btnArr[0][2] = findViewById(R.id.btn_02);        btnArr[0][3] = findViewById(R.id.btn_03);        btnArr[0][4] = findViewById(R.id.btn_04);        btnArr[0][5] = findViewById(R.id.btn_05);        btnArr[0][6] = findViewById(R.id.btn_06);        btnArr[0][7] = findViewById(R.id.btn_07);        btnArr[0][8] = findViewById(R.id.btn_08);        btnArr[0][9] = findViewById(R.id.btn_09);
-        btnArr[1][0] = findViewById(R.id.btn_10);        btnArr[1][1] = findViewById(R.id.btn_11);        btnArr[1][2] = findViewById(R.id.btn_12);        btnArr[1][3] = findViewById(R.id.btn_13);        btnArr[1][4] = findViewById(R.id.btn_14);        btnArr[1][5] = findViewById(R.id.btn_15);        btnArr[1][6] = findViewById(R.id.btn_16);        btnArr[1][7] = findViewById(R.id.btn_17);        btnArr[1][8] = findViewById(R.id.btn_18);        btnArr[1][9] = findViewById(R.id.btn_19);
-        btnArr[2][0] = findViewById(R.id.btn_20);        btnArr[2][1] = findViewById(R.id.btn_21);        btnArr[2][2] = findViewById(R.id.btn_22);        btnArr[2][3] = findViewById(R.id.btn_23);        btnArr[2][4] = findViewById(R.id.btn_24);        btnArr[2][5] = findViewById(R.id.btn_25);        btnArr[2][6] = findViewById(R.id.btn_26);        btnArr[2][7] = findViewById(R.id.btn_27);        btnArr[2][8] = findViewById(R.id.btn_28);        btnArr[2][9] = findViewById(R.id.btn_29);
-        btnArr[3][0] = findViewById(R.id.btn_30);        btnArr[3][1] = findViewById(R.id.btn_31);        btnArr[3][2] = findViewById(R.id.btn_32);        btnArr[3][3] = findViewById(R.id.btn_33);        btnArr[3][4] = findViewById(R.id.btn_34);        btnArr[3][5] = findViewById(R.id.btn_35);        btnArr[3][6] = findViewById(R.id.btn_36);        btnArr[3][7] = findViewById(R.id.btn_37);        btnArr[3][8] = findViewById(R.id.btn_38);        btnArr[3][9] = findViewById(R.id.btn_39);
-        btnArr[4][0] = findViewById(R.id.btn_40);        btnArr[4][1] = findViewById(R.id.btn_41);        btnArr[4][2] = findViewById(R.id.btn_42);        btnArr[4][3] = findViewById(R.id.btn_43);        btnArr[4][4] = findViewById(R.id.btn_44);        btnArr[4][5] = findViewById(R.id.btn_45);        btnArr[4][6] = findViewById(R.id.btn_46);        btnArr[4][7] = findViewById(R.id.btn_47);        btnArr[4][8] = findViewById(R.id.btn_48);        btnArr[4][9] = findViewById(R.id.btn_49);
-        btnArr[5][0] = findViewById(R.id.btn_50);        btnArr[5][1] = findViewById(R.id.btn_51);        btnArr[5][2] = findViewById(R.id.btn_52);        btnArr[5][3] = findViewById(R.id.btn_53);        btnArr[5][4] = findViewById(R.id.btn_54);        btnArr[5][5] = findViewById(R.id.btn_55);        btnArr[5][6] = findViewById(R.id.btn_56);        btnArr[5][7] = findViewById(R.id.btn_57);        btnArr[5][8] = findViewById(R.id.btn_58);        btnArr[5][9] = findViewById(R.id.btn_59);
-        btnArr[6][0] = findViewById(R.id.btn_60);        btnArr[6][1] = findViewById(R.id.btn_61);        btnArr[6][2] = findViewById(R.id.btn_62);        btnArr[6][3] = findViewById(R.id.btn_63);        btnArr[6][4] = findViewById(R.id.btn_64);        btnArr[6][5] = findViewById(R.id.btn_65);        btnArr[6][6] = findViewById(R.id.btn_66);        btnArr[6][7] = findViewById(R.id.btn_67);        btnArr[6][8] = findViewById(R.id.btn_68);        btnArr[6][9] = findViewById(R.id.btn_69);
-        btnArr[7][0] = findViewById(R.id.btn_70);        btnArr[7][1] = findViewById(R.id.btn_71);        btnArr[7][2] = findViewById(R.id.btn_72);        btnArr[7][3] = findViewById(R.id.btn_73);        btnArr[7][4] = findViewById(R.id.btn_74);        btnArr[7][5] = findViewById(R.id.btn_75);        btnArr[7][6] = findViewById(R.id.btn_76);        btnArr[7][7] = findViewById(R.id.btn_77);        btnArr[7][8] = findViewById(R.id.btn_78);        btnArr[7][9] = findViewById(R.id.btn_79);
-        btnArr[8][0] = findViewById(R.id.btn_80);        btnArr[8][1] = findViewById(R.id.btn_81);        btnArr[8][2] = findViewById(R.id.btn_82);        btnArr[8][3] = findViewById(R.id.btn_83);        btnArr[8][4] = findViewById(R.id.btn_84);        btnArr[8][5] = findViewById(R.id.btn_85);        btnArr[8][6] = findViewById(R.id.btn_86);        btnArr[8][7] = findViewById(R.id.btn_87);        btnArr[8][8] = findViewById(R.id.btn_88);        btnArr[8][9] = findViewById(R.id.btn_89);
-        btnArr[9][0] = findViewById(R.id.btn_90);        btnArr[9][1] = findViewById(R.id.btn_91);        btnArr[9][2] = findViewById(R.id.btn_92);        btnArr[9][3] = findViewById(R.id.btn_93);        btnArr[9][4] = findViewById(R.id.btn_94);        btnArr[9][5] = findViewById(R.id.btn_95);        btnArr[9][6] = findViewById(R.id.btn_96);        btnArr[9][7] = findViewById(R.id.btn_97);        btnArr[9][8] = findViewById(R.id.btn_98);        btnArr[9][9] = findViewById(R.id.btn_99);
-
-        for(int i = 0; i < 10; i++){
-            for(int j = 0; j < 10; j++){
-                btnArr[i][j].setOnClickListener(onClickListener) ;
-            }
-        }
+        gameStat = END;
+        hintStat = HINT_OFF;
+        DrowBoard();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
+    public void fndTimerStart(){
+        fndTimerCnt = 0;
 
-        int ret = -1;
-        ret = endPushSwitchThread();
-    }
-
-
-    boolean canMove(int nowI, int nowJ, int pastI, int pastJ) {
-        int iSpan = nowI - pastI;
-        int jSpan = nowJ - pastJ;
-        if (iSpan > 1) return false;
-        else if (iSpan < -1) return false;
-        else if (jSpan > 1) return false;
-        else if (jSpan < -1) return false;
-        else return true;
-    }
-
-    public void timerStart(){
-        timer = new Timer();
-        timerTask= new TimerTask() {
+        fndTimer = new Timer();
+        fndTimerTask = new TimerTask() {
             @Override
             public void run() {
-                WriteFnd(timerCnt);
-                timerCnt++;
+                WriteFnd(fndTimerCnt);
+                fndTimerCnt++;
             }
-
         };
-        timer.schedule(timerTask, 0, 1000); //Timer 실행
+        fndTimer.schedule(fndTimerTask, 0, 1000); //Timer 실행
+    }
+    public void fndTimerEnd(){
+        fndTimer.cancel();//타이머 종료
     }
 
-    public void timerStop(){
-        timer.cancel();//타이머 종료
+    public void pushSwitchTimerStart(){
+        pushSwitchTimer = new Timer();
+        pushSwitchTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+                int stat = ReadPushSwitch();
+                if(stat > 0 || !dotIsRunning) MoveStart(stat);
+            }
+        };
+        pushSwitchTimer.schedule(pushSwitchTimerTask, 0, 100); //Timer 실행
+    }
+    public void pushSwitchTimerEnd(){
+        pushSwitchTimer.cancel();//타이머 종료
+    }
+
+
+    View.OnClickListener clickListener = new View.OnClickListener(){
+
+        @Override
+        public void onClick(View view) {
+            switch (view.getId()){
+                case R.id.start_btn:
+                    if(gameStat == END){
+                        gameStat = WORK;
+                        fndTimerStart();
+                        pushSwitchTimerStart();
+                        startBtn.setImageResource(R.drawable.give_up_btn);
+                    }else{
+                        gameStat = END;
+                        fndTimerEnd();
+                        pushSwitchTimerEnd();
+                        startBtn.setImageResource(R.drawable.start_btn);
+                    }
+                    break;
+                case R.id.hint_btn:
+                    if(hintStat == HINT_OFF){
+                        hintStat = HINT_ON;
+                        WriteLed(CalcLED(gameClass.getDistance()));
+
+                        if(!buzzerIsRunning){
+                            buzzerCountDownTimer = new CountDownTimer(2000, 200) {
+                                public void onTick(long millisUntilFinished) {
+                                    buzzerIsRunning = true;
+                                    if(buzzerStat == BUZZER_OFF) {
+                                        WriteBuzzer(BUZZER_ON);
+                                        buzzerStat = BUZZER_ON;
+                                    }else{
+                                        WriteBuzzer(BUZZER_OFF);
+                                        buzzerStat = BUZZER_OFF;
+                                    }
+                                }
+
+                                public void onFinish() {
+                                    WriteBuzzer(BUZZER_OFF);
+                                    buzzerIsRunning = false;
+                                }
+                            }.start();
+                        }
+
+                        hintBtn.setImageResource(R.drawable.hint_off_btn);
+                    }else{
+                        hintStat = HINT_OFF;
+                        hintBtn.setImageResource(R.drawable.hint_on_btn);
+                    }
+                    break;
+            }
+        }
+    };
+
+    public void DrowBoard(){
+        gamePlayer.setX(gamePlayer.getWidth()*playerX);
+        gamePlayer.setY(gamePlayer.getHeight()*playerY);
+
+        gameTarget.setX(gameTarget.getWidth()*targetX);
+        gameTarget.setY(gameTarget.getHeight()*targetY);
+    }
+
+    public int CalcLED(int distance){
+        if(distance < 8) return (int) Math.pow(2, distance);
+        else return 128;
+    }
+
+    private void MoveStart(int stat) {
+        // PLAYER 이동
+        if(gameClass.MovePlayer(stat) > 0){
+            tryCount++;
+            WriteTextLcd("STEP : " + tryCount, " ");
+        }else if(gameClass.MovePlayer(stat) == 0){
+            gameStat = END;
+            fndTimerEnd();
+            pushSwitchTimerEnd();
+            startBtn.setImageResource(R.drawable.start_btn);
+        }
+        playerX = gameClass.getLocateX(PLAYER);
+        playerY = gameClass.getLocateY(PLAYER);
+
+        // 타이머 실행
+        if(!dotIsRunning){
+            dotCountDownTimer = new CountDownTimer(3000, 1000) {
+                public void onTick(long millisUntilFinished) {
+                    dotIsRunning = true;
+                    WriteDot((int) (millisUntilFinished/1000));
+                }
+
+                public void onFinish() {
+                    dotIsRunning = false;
+                }
+            }.start();
+        }
+
+        // TARGET 이동
+        if(gameClass.RunAway(2) > 0){       // 도망갔을 때,
+            if(!stepMotorIsRunning){
+                stepMotorCountDownTimer = new CountDownTimer(2000, 1000) {
+                    public void onTick(long millisUntilFinished) {
+                        stepMotorIsRunning = true;
+                        WriteStepMotor(STEP_MOTOR_ON, STEP_MOTOR_DIR_RIGHT, 100);
+                    }
+
+                    public void onFinish() {
+                        stepMotorIsRunning = false;
+                        WriteStepMotor(STEP_MOTOR_OFF, STEP_MOTOR_DIR_LEFT, 100);
+                    }
+                }.start();
+            }
+        }
+        targetX = gameClass.getLocateX(TARGET);
+        targetY = gameClass.getLocateY(TARGET);
+
+        // 화면 업데이트
+        DrowBoard();
     }
 
     public native int ReadLed();
@@ -189,8 +261,7 @@ public class MainActivity extends AppCompatActivity {
     public native int WriteTextLcd(String str1, String str2);
     public native int ReadBuzzer();
     public native int WriteBuzzer(int stat);
-    public native int startPushSwitchThread();
-    public native int endPushSwitchThread();
+    public native int ReadPushSwitch();
     public native int ReadDipSwitch();
     public native int WriteStepMotor(int action, int direction, int speed);
 
