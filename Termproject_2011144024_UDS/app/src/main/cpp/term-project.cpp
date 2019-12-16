@@ -173,7 +173,7 @@ Java_com_example_termproject_12011144024_1uds_MainActivity_ReadPushSwitch(JNIEnv
     ret = pushSwitch.pushSwitchOpen();
     if(ret < 0) return -1;
 
-    ret = pushSwitch.pushSwitchRead();
+    result = pushSwitch.pushSwitchRead();
     if(ret < 0) return -1;
 
     ret = pushSwitch.pushSwitchClose();

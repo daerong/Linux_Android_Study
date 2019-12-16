@@ -129,7 +129,7 @@ public class GameBoard {
     public int RunAway(int threshold){      // 임계치에 걸리면 도망
         int distanceX = playerX - targetX;
         int distanceY = playerY - targetY;
-        if(Math.abs(playerX) > threshold || Math.abs(playerY) > threshold) return 0;
+        if(Math.abs(distanceX) > threshold || Math.abs(distanceY) > threshold) return 0;
 
 //        if(distanceX > 0 && distanceY > 0){             // target이 좌상단
 //
@@ -149,11 +149,10 @@ public class GameBoard {
 //
 //        }
 
-        int direction = (int) (Math.random()*1);          // 0:이동안함, 1:이동함
-        boolean isCorrect = false;
-
+        int direction = (int) (Math.random()*2);          // 0:이동안함, 1:이동함
         if(direction == 0) return 0;
 
+        boolean isCorrect = false;
         while(!isCorrect){
             direction = (int) (Math.random()*4) + 1;          // 1:상, 2:우, 3:하, 4:좌
             switch (direction){
