@@ -4,6 +4,9 @@
 
 안드로이드, Java/XML, JNI, Term Project 순서로 진행합니다.
 
+## Term Project
+- [링크](https://github.com/daerong/Linux_Android_Study/tree/master/Termproject_2011144024_UDS)
+
 ## Environment
 Language
 - Java
