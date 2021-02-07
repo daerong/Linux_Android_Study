@@ -1,4 +1,3 @@
-![과제(금_오전)_유대성_2011144024-01](https://user-images.githubusercontent.com/26676087/107142619-af694780-6973-11eb-90f0-a5692f649001.png)
 ![과제(금_오전)_유대성_2011144024-02](https://user-images.githubusercontent.com/26676087/107142623-b1330b00-6973-11eb-8358-407221bba988.png)
 ![과제(금_오전)_유대성_2011144024-03](https://user-images.githubusercontent.com/26676087/107142625-b1cba180-6973-11eb-8ce6-dd7fee4e396e.png)
 ![과제(금_오전)_유대성_2011144024-04](https://user-images.githubusercontent.com/26676087/107142626-b2643800-6973-11eb-9220-6473385330e9.png)
