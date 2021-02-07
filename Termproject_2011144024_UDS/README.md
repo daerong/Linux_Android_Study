@@ -1,1 +1,10 @@
-#Daerong
+![과제(금_오전)_유대성_2011144024-01](https://user-images.githubusercontent.com/26676087/107142619-af694780-6973-11eb-90f0-a5692f649001.png)
+![과제(금_오전)_유대성_2011144024-02](https://user-images.githubusercontent.com/26676087/107142623-b1330b00-6973-11eb-8358-407221bba988.png)
+![과제(금_오전)_유대성_2011144024-03](https://user-images.githubusercontent.com/26676087/107142625-b1cba180-6973-11eb-8ce6-dd7fee4e396e.png)
+![과제(금_오전)_유대성_2011144024-04](https://user-images.githubusercontent.com/26676087/107142626-b2643800-6973-11eb-9220-6473385330e9.png)
+![과제(금_오전)_유대성_2011144024-05](https://user-images.githubusercontent.com/26676087/107142628-b2fcce80-6973-11eb-9aa7-2eccdfa6d27d.png)
+![과제(금_오전)_유대성_2011144024-06](https://user-images.githubusercontent.com/26676087/107142631-b3956500-6973-11eb-86da-e97b9ee0f87a.png)
+![과제(금_오전)_유대성_2011144024-07](https://user-images.githubusercontent.com/26676087/107142633-b55f2880-6973-11eb-8c7d-ac807c04d299.png)
+![과제(금_오전)_유대성_2011144024-08](https://user-images.githubusercontent.com/26676087/107142636-b5f7bf00-6973-11eb-87a1-50ff96e236ab.png)
+![과제(금_오전)_유대성_2011144024-09](https://user-images.githubusercontent.com/26676087/107142638-b6905580-6973-11eb-9283-170f39aff1e0.png)
+![과제(금_오전)_유대성_2011144024-10](https://user-images.githubusercontent.com/26676087/107142640-b7c18280-6973-11eb-91ff-599c672f0fc3.png)
